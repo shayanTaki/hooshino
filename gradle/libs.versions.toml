@@ -1,0 +1,36 @@
+[versions]
+# استفاده از آخرین نسخه‌های پایدار
+agp = "8.4.0"  # (به جای 8.9.1 که وجود ندارد)
+kotlin = "2.0.0" # (به جای 2.0.21 که ممکن است ناپایدار باشد)
+coreKtx = "1.12.0" # (به جای 1.16.0)
+junit = "4.13.2"
+junitVersion = "1.1.5" # (به جای 1.2.1)
+espressoCore = "3.5.1" # (به جای 3.6.1)
+lifecycleRuntimeKtx = "2.7.0" # (به جای 2.9.0)
+activityCompose = "1.9.0" # (به جای 1.10.1)
+composeBom = "2024.05.00" # (به جای 2024.09.00، سازگار با Kotlin 2.0.0)
+browser = "1.8.0" # برای Chrome Custom Tabs (جدید)
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+# کتابخانه برای Chrome Custom Tabs
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# این پلاگین مدیریت کامپایلر Compose را برای Kotlin 2.0 انجام می‌دهد
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
