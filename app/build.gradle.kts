@@ -12,8 +12,8 @@ android {
         applicationId = "com.example.hooshino"
         minSdk = 26 // تغییر به 24 برای پشتیبانی از دستگاه‌های بیشتر (اندروید 7.0 به بالا)
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

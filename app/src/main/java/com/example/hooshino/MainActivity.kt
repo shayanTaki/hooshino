@@ -1,9 +1,10 @@
 package com.example.hooshino
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException // اضافه شده
+import android.content.Intent // اضافه شده
 import android.graphics.Bitmap
-// import android.graphics.Color as AndroidGraphicsColor
-// import android.net.Uri
+import android.net.Uri // فعال شده
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -21,8 +22,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-// import androidx.activity.enableEdgeToEdge
-// import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent // فعال شده
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -119,7 +119,7 @@ fun SystemUiController(window: Window, showFullscreen: Boolean) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(
-    appState: AppLoadingState, // استفاده از enum تعریف شده
+    appState: AppLoadingState,
     websiteUrl: String,
     onWebViewCreated: (WebView) -> Unit,
     onPageLoadFinished: () -> Unit,
@@ -181,12 +181,37 @@ fun MainContent(
                                 val eMsg = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) error?.description else "خطای نامشخص"
                                 val reqUrl = request?.url
                                 Log.e("WebViewM", "Error: ${if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) error?.errorCode else ""} ($eMsg) for URL: $reqUrl")
-                                Toast.makeText(context, "خطا در بارگذاری: $eMsg", Toast.LENGTH_LONG).show()
+                                Toast.makeText(view?.context ?: ctx, "خطا در بارگذاری: $eMsg", Toast.LENGTH_LONG).show()
                                 onPageLoadError()
                             }
+
                             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                                val url = request?.url.toString()
-                                Log.d("WebViewM", "Loading URL in WebView: $url")
+                                val urlToLoad = request?.url ?: return false
+                                val targetUrlString = urlToLoad.toString()
+                                val mainWebsiteHost = Uri.parse(websiteUrl).host
+
+                                if (urlToLoad.host != mainWebsiteHost && (urlToLoad.scheme == "http" || urlToLoad.scheme == "https")) {
+                                    Log.d("WebViewM", "External URL detected: $targetUrlString")
+                                    try {
+                                        val customTabsIntent = CustomTabsIntent.Builder().build()
+                                        customTabsIntent.launchUrl(view!!.context, urlToLoad) // view is non-null here if urlToLoad is non-null and host is checked
+                                        Log.d("WebViewM", "Opening URL externally via CustomTabs: $targetUrlString")
+                                        return true
+                                    } catch (e: ActivityNotFoundException) {
+                                        Log.e("WebViewM", "Custom Tab handler not found for $targetUrlString. Trying general intent.", e)
+                                        try {
+                                            val intent = Intent(Intent.ACTION_VIEW, urlToLoad)
+                                            view!!.context.startActivity(intent)
+                                            Log.d("WebViewM", "Opening URL externally via general Intent: $targetUrlString")
+                                            return true
+                                        } catch (e2: ActivityNotFoundException) {
+                                            Log.e("WebViewM", "No browser found to handle external URL: $targetUrlString", e2)
+                                            Toast.makeText(view?.context ?: ctx, "مرورگری برای باز کردن لینک پیدا نشد.", Toast.LENGTH_LONG).show()
+                                            return true
+                                        }
+                                    }
+                                }
+                                Log.d("WebViewM", "Loading URL in WebView: $targetUrlString")
                                 return false
                             }
                         }
